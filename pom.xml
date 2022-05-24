@@ -11,7 +11,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>ovh.excale</groupId>
+	<groupId>it.uniroma1.studenti</groupId>
 	<artifactId>battle-of-sexes</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
@@ -47,6 +47,19 @@
 			<version>1.18.24</version>
 			<optional>true</optional>
 		</dependency>
+
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>22.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.2.11</version>
+		</dependency>
+
 
 	</dependencies>
 
