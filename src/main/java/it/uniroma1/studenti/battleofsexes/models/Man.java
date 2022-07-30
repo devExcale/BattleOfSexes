@@ -13,7 +13,7 @@ public class Man {
 	public enum Type {
 
 		FAITHFUL("F"),
-		PHILANDERERS("P");
+		PHILANDERER("P");
 
 		@Getter
 		private final String code;
