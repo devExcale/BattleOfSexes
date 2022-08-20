@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static it.uniroma1.studenti.battleofsexes.models.Man.Type.FAITHFUL;
@@ -22,6 +20,9 @@ public class PayoffTable {
 	private final float a;
 	private final float b;
 	private final float c;
+
+	private final float[][] menPayoffs;
+	private final float[][] womenPayoffs;
 
 	@Autowired
 	public PayoffTable(ApplicationArguments args) {
@@ -44,54 +45,34 @@ public class PayoffTable {
 				.map(Float::parseFloat)
 				.orElse(3f);
 
+		menPayoffs = new float[2][2];
+		womenPayoffs = new float[2][2];
+
 	}
 
-	public Map<Man.Type, Float> getCoyProbabilities() {
+	public void calculatePayoffs() {
 
-		float f = coyToFaithful(), p = coyToPhilanderer();
-		float total = f + p;
+		int F = FAITHFUL.ordinal(), P = PHILANDERER.ordinal();
+		int C = COY.ordinal(), S = FAST.ordinal();
 
-		Map<Man.Type, Float> probabs = new HashMap<>();
-		probabs.put(FAITHFUL, f / total * 100);
-		probabs.put(PHILANDERER, p / total * 100);
+		menPayoffs[F][C] = faithfulToCoy();
+		menPayoffs[F][S] = faithfulToFast();
+		menPayoffs[P][C] = philandererToCoy();
+		menPayoffs[P][S] = philandererToFast();
 
-		return probabs;
+		womenPayoffs[C][F] = coyToFaithful();
+		womenPayoffs[C][P] = coyToPhilanderer();
+		womenPayoffs[S][F] = fastToFaithful();
+		womenPayoffs[S][P] = fastToPhilanderer();
+
 	}
 
-	public Map<Man.Type, Float> getFastProbabilities() {
-
-		float f = fastToFaithful(), p = fastToPhilanderer();
-		float total = f + p;
-
-		Map<Man.Type, Float> probabs = new HashMap<>();
-		probabs.put(FAITHFUL, f / total * 100);
-		probabs.put(PHILANDERER, p / total * 100);
-
-		return probabs;
+	public float womanToMan(Woman.Type wt, Man.Type mt) {
+		return womenPayoffs[wt.ordinal()][mt.ordinal()];
 	}
 
-	public Map<Woman.Type, Float> getFaithfulProbabilities() {
-
-		float c = faithfulToCoy(), s = faithfulToFast();
-		float total = c + s;
-
-		Map<Woman.Type, Float> probabs = new HashMap<>();
-		probabs.put(COY, c / total * 100);
-		probabs.put(FAST, s / total * 100);
-
-		return probabs;
-	}
-
-	public Map<Woman.Type, Float> getPhilandererProbabilities() {
-
-		float c = philandererToCoy(), s = philandererToFast();
-		float total = c + s;
-
-		Map<Woman.Type, Float> probabs = new HashMap<>();
-		probabs.put(COY, c / total * 100);
-		probabs.put(FAST, s / total * 100);
-
-		return probabs;
+	public float manToWoman(Man.Type mt, Woman.Type wt) {
+		return womenPayoffs[mt.ordinal()][wt.ordinal()];
 	}
 
 	public float coyToFaithful() {

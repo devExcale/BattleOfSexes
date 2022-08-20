@@ -21,10 +21,11 @@ public class Counselor extends Thread {
 		// Keep matching until there's no more women nor men
 		while(true) {
 
-			Woman woman = women.poll();
-			Man man = men.poll();
+			Woman w1 = women.poll(), w2 = women.poll();
+			Man m1 = men.poll(), m2 = men.poll();
 
-			if(woman == null || man == null)
+			// If there are < 4 people, end of queue
+			if(w1 == null || w2 == null || m1 == null || m2 == null)
 				return;
 
 		}
