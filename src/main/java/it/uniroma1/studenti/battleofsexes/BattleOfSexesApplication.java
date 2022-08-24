@@ -1,11 +1,11 @@
 package it.uniroma1.studenti.battleofsexes;
 
-import it.uniroma1.studenti.battleofsexes.beans.PayoffTable;
-import it.uniroma1.studenti.battleofsexes.beans.RandomPicker;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+
+import java.util.Optional;
 
 @SpringBootApplication
 public class BattleOfSexesApplication {
@@ -14,20 +14,62 @@ public class BattleOfSexesApplication {
 		SpringApplication.run(BattleOfSexesApplication.class, args);
 	}
 
-	private static PayoffTable payoffs;
-
-	public static PayoffTable getPayoffs() {
-		return payoffs;
-	}
+	private static ApplicationArguments args;
+	private static float a;
+	private static float b;
+	private static float c;
+	private static int groupSize;
 
 	@Autowired
-	public void setPayoffs(PayoffTable payoffs) {
-		BattleOfSexesApplication.payoffs = payoffs;
+	public void setArguments(ApplicationArguments arguments) {
+
+		args = arguments;
+
+		a = Optional.ofNullable(args.getOptionValues("a"))
+				.filter(list -> !list.isEmpty())
+				.map(list -> list.get(0))
+				.map(Float::parseFloat)
+				.orElse(15f);
+
+		b = Optional.ofNullable(args.getOptionValues("b"))
+				.filter(list -> !list.isEmpty())
+				.map(list -> list.get(0))
+				.map(Float::parseFloat)
+				.orElse(20f);
+
+		c = Optional.ofNullable(args.getOptionValues("a"))
+				.filter(list -> !list.isEmpty())
+				.map(list -> list.get(0))
+				.map(Float::parseFloat)
+				.orElse(3f);
+
+		groupSize = Optional.ofNullable(arguments.getOptionValues("groupsize"))
+				.filter(list -> !list.isEmpty())
+				.map(list -> list.get(0))
+				.map(Integer::parseInt)
+				.filter(x -> x > 2)
+				.orElse(2);
+
 	}
 
-	@Bean
-	public RandomPicker randomsBean() {
-		return new RandomPicker();
+	public static ApplicationArguments getArguments() {
+		return args;
+	}
+
+	public static float getA() {
+		return a;
+	}
+
+	public static float getB() {
+		return b;
+	}
+
+	public static float getC() {
+		return c;
+	}
+
+	public static int getGroupSize() {
+		return groupSize;
 	}
 
 }

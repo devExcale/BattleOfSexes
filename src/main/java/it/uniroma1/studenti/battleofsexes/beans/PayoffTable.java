@@ -1,12 +1,13 @@
 package it.uniroma1.studenti.battleofsexes.beans;
 
+import it.uniroma1.studenti.battleofsexes.BattleOfSexesApplication;
 import it.uniroma1.studenti.battleofsexes.models.Man;
 import it.uniroma1.studenti.battleofsexes.models.Woman;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import javax.annotation.PostConstruct;
 
 import static it.uniroma1.studenti.battleofsexes.models.Man.Type.FAITHFUL;
 import static it.uniroma1.studenti.battleofsexes.models.Man.Type.PHILANDERER;
@@ -17,6 +18,16 @@ import static it.uniroma1.studenti.battleofsexes.models.Woman.Type.FAST;
 @Component
 public class PayoffTable {
 
+	// === STATIC ===
+
+	public static PayoffTable instance;
+
+	public static PayoffTable getInstance() {
+		return instance;
+	}
+
+	// === INSTANCE ===
+
 	private final float a;
 	private final float b;
 	private final float c;
@@ -26,30 +37,18 @@ public class PayoffTable {
 
 	@Autowired
 	public PayoffTable(ApplicationArguments args) {
-
-		a = Optional.ofNullable(args.getOptionValues("a"))
-				.filter(list -> !list.isEmpty())
-				.map(list -> list.get(0))
-				.map(Float::parseFloat)
-				.orElse(15f);
-
-		b = Optional.ofNullable(args.getOptionValues("b"))
-				.filter(list -> !list.isEmpty())
-				.map(list -> list.get(0))
-				.map(Float::parseFloat)
-				.orElse(20f);
-
-		c = Optional.ofNullable(args.getOptionValues("a"))
-				.filter(list -> !list.isEmpty())
-				.map(list -> list.get(0))
-				.map(Float::parseFloat)
-				.orElse(3f);
+		instance = this;
 
 		menPayoffs = new float[2][2];
 		womenPayoffs = new float[2][2];
 
+		a = BattleOfSexesApplication.getA();
+		b = BattleOfSexesApplication.getB();
+		c = BattleOfSexesApplication.getC();
+
 	}
 
+	@PostConstruct
 	public void calculatePayoffs() {
 
 		int F = FAITHFUL.ordinal(), P = PHILANDERER.ordinal();
@@ -72,7 +71,7 @@ public class PayoffTable {
 	}
 
 	public float manToWoman(Man.Type mt, Woman.Type wt) {
-		return womenPayoffs[mt.ordinal()][wt.ordinal()];
+		return menPayoffs[mt.ordinal()][wt.ordinal()];
 	}
 
 	public float coyToFaithful() {
