@@ -12,72 +12,102 @@ import java.util.Set;
 
 public class Counselor extends Thread {
 
+	private final Generation generation;
 	private final Queue<Woman> women;
 	private final Queue<Man> men;
 	private final int groupSize;
 
-	private volatile boolean run;
-
-	public Counselor(Queue<Woman> women, Queue<Man> men) {
+	public Counselor(Generation generation, Queue<Man> men, Queue<Woman> women) {
+		this.generation = generation;
 		this.women = Objects.requireNonNull(women);
 		this.men = Objects.requireNonNull(men);
 		groupSize = BattleOfSexesApplication.getGroupSize();
-		run = true;
-	}
-
-	public void end() {
-		run = false;
 	}
 
 	@Override
 	public void run() {
 
+		Set<Man> matchMen;
+		Set<Woman> matchWomen;
+
 		// Keep matching until there's no more women nor men
-		while(run) {
+		while((matchMen = pollMan()).size() == groupSize && (matchWomen = pollWoman()).size() == groupSize)
+			match(matchMen, matchWomen);
 
-			Set<Man> menToMatch = new HashSet<>();
-			Set<Woman> womenToMatch = new HashSet<>();
+		// End of queue
 
-			// Take as many men/women needed
-			for(int i = 0; i < groupSize; i++) {
+	}
 
-				Man m = men.poll();
-				Woman w = women.poll();
+	private Set<Man> pollMan() {
 
-				// If one of them is missing we've reached the end of the queue,
-				// there are no more possible matches
-				if(m == null || w == null)
-					return;
+		Set<Man> set = new HashSet<>();
 
-				menToMatch.add(m);
-				womenToMatch.add(w);
+		for(int i = 0; i < groupSize; i++) {
 
-			}
+			Man m = men.poll();
 
-			match(menToMatch, womenToMatch);
+			if(m == null)
+				break;
+
+			set.add(m);
 
 		}
 
+		return set;
+	}
+
+	private Set<Woman> pollWoman() {
+
+		Set<Woman> set = new HashSet<>();
+
+		for(int i = 0; i < groupSize; i++) {
+
+			Woman w = women.poll();
+
+			if(w == null)
+				break;
+
+			set.add(w);
+
+		}
+
+		return set;
 	}
 
 	private void match(Set<Man> men, Set<Woman> women) {
 
+		Set<Man> matchedMen = new HashSet<>();
+
 		// Try to match all men
 		for(Man man : men) {
 
-			for(Woman woman : man.preferredWomen(women)) {
+			// With every woman
+			for(Woman woman : man.topPreferences(women)) {
 
-				Set<Man> pm = woman.preferredMen(men);
-
+				// If a woman considers the man as a top preference
+				Set<Man> pm = woman.topPreferences(men);
 				if(pm.contains(man)) {
 
+					// It's a match, deliver children
 					Couple couple = new Couple(man, woman);
+					couple.procreate();
 
+					generation.addCouple(couple);
+
+					// Remove the couple from the options
+					women.remove(woman);
+					matchedMen.add(man);
+
+					break;
 				}
-
 			}
 
 		}
+
+		// Put free men and women in queue
+		men.removeAll(matchedMen);
+		this.men.addAll(matchedMen);
+		this.women.addAll(women);
 
 	}
 

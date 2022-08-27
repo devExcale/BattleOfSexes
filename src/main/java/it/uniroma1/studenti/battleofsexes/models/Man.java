@@ -1,8 +1,6 @@
 package it.uniroma1.studenti.battleofsexes.models;
 
 import it.uniroma1.studenti.battleofsexes.beans.PayoffTable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,45 +12,51 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@Builder
-public class Man {
+public class Man extends Human {
 
-	private final Type type;
+	public Man(Man.Type type) {
+		super(type);
+	}
+
+	@Override
+	public Man.Type getType() {
+		return ((Man.Type) type);
+	}
 
 	/**
-	 * Based on payoffs, a man may prefer some women to other women.
-	 * This method calculates the preferences of the man for some women,
+	 * Based on payoffs, a woman may prefer some men to other men.
+	 * This method calculates the preferences of the woman for some men,
 	 * and returns only the best ones.
 	 *
-	 * @param women an array of women to choose from
-	 * @return preferred women
+	 * @param women an array of men to choose from
+	 * @return preferred men
 	 */
-	public Set<Woman> preferredWomen(Set<Woman> women) {
+	public Set<Woman> topPreferences(Set<Woman> women) {
 
 		PayoffTable payoffs = PayoffTable.getInstance();
 
+		// Group men by their payoffs
 		Map<Float, Set<Woman>> rankings = women.stream()
-				.collect(Collectors.groupingBy(woman -> payoffs.manToWoman(type, woman.getType()), Collectors.toSet()));
+				.collect(Collectors.groupingBy(woman -> payoffs.get(type, woman.getType()), Collectors.toSet()));
 
 		// Ignore null payoffs
 		rankings.remove(0f);
 
-		// Get max payoff value
+		// Pick highest payoff
 		Optional<Float> maxPayoff = rankings.keySet()
 				.stream()
 				.max(Float::compare);
 
 		// No compatible men check (all payoffs are null)
-		if(!maxPayoff.isPresent())
+		if(maxPayoff.isEmpty())
 			return Collections.emptySet();
 
-		// Return the set containing the highest ranking men
+		// Return the set containing the men with highest payoff
 		return rankings.get(maxPayoff.get());
 
 	}
 
-	public enum Type {
+	public enum Type implements GeneType {
 
 		FAITHFUL("F"),
 		PHILANDERER("P");

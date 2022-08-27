@@ -19,10 +19,13 @@ public class BattleOfSexesApplication {
 	private static float b;
 	private static float c;
 	private static int groupSize;
+	private static int nCounselors;
+	private static int nRegistries;
 
 	@Autowired
 	public void setArguments(ApplicationArguments arguments) {
 
+		// TODO: application properties on exec path
 		args = arguments;
 
 		a = Optional.ofNullable(args.getOptionValues("a"))
@@ -44,6 +47,20 @@ public class BattleOfSexesApplication {
 				.orElse(3f);
 
 		groupSize = Optional.ofNullable(arguments.getOptionValues("groupsize"))
+				.filter(list -> !list.isEmpty())
+				.map(list -> list.get(0))
+				.map(Integer::parseInt)
+				.filter(x -> x > 2)
+				.orElse(3);
+
+		nCounselors = Optional.ofNullable(arguments.getOptionValues("counselors"))
+				.filter(list -> !list.isEmpty())
+				.map(list -> list.get(0))
+				.map(Integer::parseInt)
+				.filter(x -> x > 0)
+				.orElse(4);
+
+		nRegistries = Optional.ofNullable(arguments.getOptionValues("registries"))
 				.filter(list -> !list.isEmpty())
 				.map(list -> list.get(0))
 				.map(Integer::parseInt)
@@ -70,6 +87,14 @@ public class BattleOfSexesApplication {
 
 	public static int getGroupSize() {
 		return groupSize;
+	}
+
+	public static int getNCounselors() {
+		return nCounselors;
+	}
+
+	public static int getNRegistries() {
+		return nRegistries;
 	}
 
 }

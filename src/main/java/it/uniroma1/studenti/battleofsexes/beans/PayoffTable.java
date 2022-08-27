@@ -1,6 +1,7 @@
 package it.uniroma1.studenti.battleofsexes.beans;
 
 import it.uniroma1.studenti.battleofsexes.BattleOfSexesApplication;
+import it.uniroma1.studenti.battleofsexes.models.GeneType;
 import it.uniroma1.studenti.battleofsexes.models.Man;
 import it.uniroma1.studenti.battleofsexes.models.Woman;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,18 @@ public class PayoffTable {
 		womenPayoffs[C][P] = coyToPhilanderer();
 		womenPayoffs[S][F] = fastToFaithful();
 		womenPayoffs[S][P] = fastToPhilanderer();
+
+	}
+
+	public float get(GeneType from, GeneType to) {
+
+		if(from instanceof Woman.Type t1 && to instanceof Man.Type t2)
+			return womanToMan(t1, t2);
+
+		if(from instanceof Man.Type t1 && to instanceof Woman.Type t2)
+			return manToWoman(t1, t2);
+
+		throw new IllegalArgumentException();
 
 	}
 

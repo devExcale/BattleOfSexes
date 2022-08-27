@@ -1,6 +1,9 @@
 package it.uniroma1.studenti.battleofsexes.utils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class ProbabilityWheel<T> {
 
@@ -23,12 +26,12 @@ public class ProbabilityWheel<T> {
 
 		r = new Random();
 
-		originals = Collections.unmodifiableMap(new HashMap<>(probabilities));
-		ranges = new LinkedHashMap<>();
+		originals = Collections.unmodifiableMap(probabilities);
+		ranges = new LinkedHashMap<>(probabilities);
 
 		// Span elements
 		float ps = 0f;
-		for(Map.Entry<T, Float> e : originals.entrySet()) {
+		for(Map.Entry<T, Float> e : ranges.entrySet()) {
 
 			ps += e.getValue();
 			e.setValue(ps / 100f);
