@@ -4,6 +4,9 @@ import lombok.Getter;
 
 import java.util.Objects;
 
+/**
+ *
+ */
 public abstract class Human {
 
 	@Getter
@@ -11,14 +14,6 @@ public abstract class Human {
 
 	protected Human(GeneType type) {
 		this.type = Objects.requireNonNull(type);
-	}
-
-	public boolean isWoman() {
-		return this instanceof Woman;
-	}
-
-	public boolean isMan() {
-		return this instanceof Man;
 	}
 
 }

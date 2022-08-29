@@ -5,6 +5,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Utiliy class, used to pick random items with probabilities.
+ *
+ * @param <T> The items type
+ */
 public class ProbabilityWheel<T> {
 
 	private final Map<T, Float> originals;

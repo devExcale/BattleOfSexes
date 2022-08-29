@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -71,7 +72,7 @@ public class Generation {
 		try {
 
 			//noinspection ResultOfMethodCallIgnored
-			exec.awaitTermination(5, SECONDS);
+			exec.awaitTermination(4, SECONDS); // todo parameter
 
 		} catch(InterruptedException e) {
 			log.warn(e);
@@ -98,6 +99,27 @@ public class Generation {
 
 		}
 
+	}
+
+	@Override
+	public String toString() {
+
+		final int total = getTotalChildren();
+
+		String percents = typeStats.entrySet()
+				.stream()
+				.map(e -> {
+
+					String key = e.getKey()
+							.getCode();
+					double val = e.getValue()
+							.doubleValue();
+
+					return "%s: %.2f%%".formatted(key, val / ((double) total) * 100d);
+				})
+				.collect(Collectors.joining(", "));
+
+		return String.format("Gen %s - Total: %d, ", id, total) + percents;
 	}
 
 }

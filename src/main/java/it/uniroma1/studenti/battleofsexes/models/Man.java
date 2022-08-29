@@ -2,16 +2,14 @@ package it.uniroma1.studenti.battleofsexes.models;
 
 import it.uniroma1.studenti.battleofsexes.beans.PayoffTable;
 import lombok.Getter;
-import lombok.Setter;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
+import static it.uniroma1.studenti.battleofsexes.models.Man.Type.PHILANDERER;
+import static it.uniroma1.studenti.battleofsexes.models.Woman.Type.COY;
+
 public class Man extends Human {
 
 	public Man(Man.Type type) {
@@ -37,10 +35,11 @@ public class Man extends Human {
 
 		// Group men by their payoffs
 		Map<Float, Set<Woman>> rankings = women.stream()
+				.filter(woman -> !(type == PHILANDERER && woman.getType() == COY))
 				.collect(Collectors.groupingBy(woman -> payoffs.get(type, woman.getType()), Collectors.toSet()));
 
-		// Ignore null payoffs
-		rankings.remove(0f);
+		// Ignore null payoffs (removed feature)
+		// rankings.remove(0f);
 
 		// Pick highest payoff
 		Optional<Float> maxPayoff = rankings.keySet()
@@ -60,6 +59,9 @@ public class Man extends Human {
 
 		FAITHFUL("F"),
 		PHILANDERER("P");
+
+		public static final Map<String, Type> MAPPINGS = Arrays.stream(Type.values())
+				.collect(Collectors.toUnmodifiableMap(Type::getCode, Function.identity()));
 
 		@Getter
 		private final String code;
