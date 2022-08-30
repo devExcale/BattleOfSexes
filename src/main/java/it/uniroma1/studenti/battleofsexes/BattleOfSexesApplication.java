@@ -1,6 +1,8 @@
 package it.uniroma1.studenti.battleofsexes;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,6 +22,8 @@ public class BattleOfSexesApplication {
 	private static float c;
 	private static int groupSize;
 	private static int nCounselors;
+	@Getter
+	private static int waitTime;
 
 	@Autowired
 	public void setArguments(ApplicationArguments arguments) {
@@ -59,6 +63,11 @@ public class BattleOfSexesApplication {
 				.filter(x -> x > 0)
 				.orElse(4);
 
+	}
+
+	@Autowired
+	public void setGenerationWaitTime(@Value("${generation.waitTime:3000}") int waitTime) {
+		BattleOfSexesApplication.waitTime = waitTime;
 	}
 
 	public static ApplicationArguments getArguments() {

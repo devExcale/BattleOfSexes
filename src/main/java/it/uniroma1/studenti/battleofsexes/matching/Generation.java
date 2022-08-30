@@ -13,16 +13,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 @Log4j2
 public class Generation {
 
 	@Getter
 	private final String id;
-
-	private final Queue<Man> men;
-	private final Queue<Woman> women;
 
 	@Getter
 	private final List<Man> maleChildren;
@@ -36,8 +33,6 @@ public class Generation {
 	@Builder
 	private Generation(String id, List<Man> men, List<Woman> women) {
 		this.id = id;
-		this.men = new ConcurrentLinkedQueue<>(men);
-		this.women = new ConcurrentLinkedQueue<>(women);
 
 		int size = men.size() + women.size();
 
@@ -47,9 +42,12 @@ public class Generation {
 		typeStats = new HashMap<>();
 		initTypeStats();
 
+		Queue<Man> menQueue = new ConcurrentLinkedQueue<>(List.copyOf(men));
+		Queue<Woman> womenQueue = new ConcurrentLinkedQueue<>(List.copyOf(women));
 		counselors = new HashSet<>();
+
 		for(int i = 0; i < BattleOfSexesApplication.getNCounselors(); i++)
-			counselors.add(new Counselor(this, this.men, this.women));
+			counselors.add(new Counselor(this, menQueue, womenQueue));
 
 	}
 
@@ -66,18 +64,37 @@ public class Generation {
 	public void compute() {
 
 		ExecutorService exec = Executors.newFixedThreadPool(BattleOfSexesApplication.getNCounselors());
+
 		for(Counselor counselor : counselors)
 			exec.submit(counselor);
 
 		try {
 
 			//noinspection ResultOfMethodCallIgnored
-			exec.awaitTermination(4, SECONDS); // todo parameter
+			exec.awaitTermination(BattleOfSexesApplication.getWaitTime(), MILLISECONDS);
+			exec.shutdownNow();
 
 		} catch(InterruptedException e) {
 			log.warn(e);
 		}
 
+	}
+
+	public Map<GeneType, Float> getTypeRatios() {
+
+		float total = (float) getTotalChildren();
+		Map<GeneType, Float> ratios = new HashMap<>();
+
+		for(Map.Entry<GeneType, AtomicInteger> e : typeStats.entrySet()) {
+
+			float n = e.getValue()
+					.floatValue();
+
+			ratios.put(e.getKey(), n / total);
+
+		}
+
+		return ratios;
 	}
 
 	public int getTotalChildren() {
@@ -106,17 +123,16 @@ public class Generation {
 
 		final int total = getTotalChildren();
 
-		String percents = typeStats.entrySet()
+		String percents = getTypeRatios().entrySet()
 				.stream()
 				.map(e -> {
 
 					String key = e.getKey()
 							.getCode();
-					double val = e.getValue()
-							.doubleValue();
 
-					return "%s: %.2f%%".formatted(key, val / ((double) total) * 100d);
+					return "%s: %.2f%%".formatted(key, e.getValue() * 100f);
 				})
+				.sorted()
 				.collect(Collectors.joining(", "));
 
 		return String.format("Gen %s - Total: %d, ", id, total) + percents;
