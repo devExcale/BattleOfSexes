@@ -46,7 +46,7 @@ public class Generation {
 		Queue<Woman> womenQueue = new ConcurrentLinkedQueue<>(List.copyOf(women));
 		counselors = new HashSet<>();
 
-		for(int i = 0; i < BattleOfSexesApplication.getNCounselors(); i++)
+		for(int i = 0; i < BattleOfSexesApplication.getCounselors(); i++)
 			counselors.add(new Counselor(this, menQueue, womenQueue));
 
 	}
@@ -63,7 +63,7 @@ public class Generation {
 
 	public void compute() {
 
-		ExecutorService exec = Executors.newFixedThreadPool(BattleOfSexesApplication.getNCounselors());
+		ExecutorService exec = Executors.newFixedThreadPool(BattleOfSexesApplication.getCounselors());
 
 		for(Counselor counselor : counselors)
 			exec.submit(counselor);

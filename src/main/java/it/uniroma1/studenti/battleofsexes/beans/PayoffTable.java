@@ -5,7 +5,6 @@ import it.uniroma1.studenti.battleofsexes.models.GeneType;
 import it.uniroma1.studenti.battleofsexes.models.Man;
 import it.uniroma1.studenti.battleofsexes.models.Woman;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -37,7 +36,7 @@ public class PayoffTable {
 	private final float[][] womenPayoffs;
 
 	@Autowired
-	public PayoffTable(ApplicationArguments args) {
+	public PayoffTable() {
 		instance = this;
 
 		menPayoffs = new float[2][2];

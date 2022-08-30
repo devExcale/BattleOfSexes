@@ -3,11 +3,8 @@ package it.uniroma1.studenti.battleofsexes;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.Optional;
 
 @SpringBootApplication
 public class BattleOfSexesApplication {
@@ -16,82 +13,50 @@ public class BattleOfSexesApplication {
 		SpringApplication.run(BattleOfSexesApplication.class, args);
 	}
 
-	private static ApplicationArguments args;
+	// Evolution parameters
+	@Getter
 	private static float a;
+	@Getter
 	private static float b;
+	@Getter
 	private static float c;
+
+	// Matching parameters
+	@Getter
 	private static int groupSize;
-	private static int nCounselors;
+	@Getter
+	private static int counselors;
 	@Getter
 	private static int waitTime;
 
 	@Autowired
-	public void setArguments(ApplicationArguments arguments) {
+	public void setEvolutionA(@Value("${evolution.a:15}") float a) {
+		BattleOfSexesApplication.a = a;
+	}
 
-		// TODO: application properties on exec path
-		args = arguments;
+	@Autowired
+	public void setEvolutionB(@Value("${evolution.b:20}") float b) {
+		BattleOfSexesApplication.b = b;
+	}
 
-		a = Optional.ofNullable(args.getOptionValues("a"))
-				.filter(list -> !list.isEmpty())
-				.map(list -> list.get(0))
-				.map(Float::parseFloat)
-				.orElse(15f);
+	@Autowired
+	public void setEvolutionC(@Value("${evolution.c:3}") float c) {
+		BattleOfSexesApplication.c = c;
+	}
 
-		b = Optional.ofNullable(args.getOptionValues("b"))
-				.filter(list -> !list.isEmpty())
-				.map(list -> list.get(0))
-				.map(Float::parseFloat)
-				.orElse(20f);
+	@Autowired
+	public void setGroupSize(@Value("${matching.groupsize:2}") int size) {
+		groupSize = (size > 2) ? size : 2;
+	}
 
-		c = Optional.ofNullable(args.getOptionValues("a"))
-				.filter(list -> !list.isEmpty())
-				.map(list -> list.get(0))
-				.map(Float::parseFloat)
-				.orElse(3f);
-
-		groupSize = Optional.ofNullable(arguments.getOptionValues("groupsize"))
-				.filter(list -> !list.isEmpty())
-				.map(list -> list.get(0))
-				.map(Integer::parseInt)
-				.filter(x -> x > 2)
-				.orElse(3);
-
-		nCounselors = Optional.ofNullable(arguments.getOptionValues("counselors"))
-				.filter(list -> !list.isEmpty())
-				.map(list -> list.get(0))
-				.map(Integer::parseInt)
-				.filter(x -> x > 0)
-				.orElse(4);
-
+	@Autowired
+	public void setCounselors(@Value("${generation.waitTime:4}") int n) {
+		counselors = (n > 1) ? n : 2;
 	}
 
 	@Autowired
 	public void setGenerationWaitTime(@Value("${generation.waitTime:3000}") int waitTime) {
 		BattleOfSexesApplication.waitTime = waitTime;
-	}
-
-	public static ApplicationArguments getArguments() {
-		return args;
-	}
-
-	public static float getA() {
-		return a;
-	}
-
-	public static float getB() {
-		return b;
-	}
-
-	public static float getC() {
-		return c;
-	}
-
-	public static int getGroupSize() {
-		return groupSize;
-	}
-
-	public static int getNCounselors() {
-		return nCounselors;
 	}
 
 }
