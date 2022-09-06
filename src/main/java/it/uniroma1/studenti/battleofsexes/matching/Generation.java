@@ -135,7 +135,10 @@ public class Generation {
 				.sorted()
 				.collect(Collectors.joining(", "));
 
-		return String.format("Gen %s - Total: %d, ", id, total) + percents;
+		String formattedTotal = BattleOfSexesApplication.getDecimalFormat()
+				.format(total);
+
+		return String.format("Gen %s - Total: %s, ", id, formattedTotal) + percents;
 	}
 
 }

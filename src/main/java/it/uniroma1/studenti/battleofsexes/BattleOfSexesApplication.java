@@ -6,12 +6,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 @SpringBootApplication
 public class BattleOfSexesApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BattleOfSexesApplication.class, args);
 	}
+
+	@Getter
+	private static DecimalFormat decimalFormat;
 
 	// Evolution parameters
 	@Getter
@@ -28,6 +35,16 @@ public class BattleOfSexesApplication {
 	private static int counselors;
 	@Getter
 	private static int waitTime;
+
+	public BattleOfSexesApplication() {
+
+		DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.ITALIAN);
+		dfs.setDecimalSeparator('.');
+		dfs.setGroupingSeparator('\'');
+
+		decimalFormat = new DecimalFormat("#,###.##", dfs);
+
+	}
 
 	@Autowired
 	public void setEvolutionA(@Value("${evolution.a:15}") float a) {

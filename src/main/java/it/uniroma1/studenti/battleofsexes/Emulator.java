@@ -44,6 +44,9 @@ public class Emulator implements CommandLineRunner {
 		boolean stable = false;
 		Map<GeneType, Float> prevRatios = null;
 
+		log.info("Initial population: {}", BattleOfSexesApplication.getDecimalFormat()
+				.format(startingPopulation));
+
 		for(int i = 0; !stable && i < 100; i++) {
 
 			gen = Generation.builder()
