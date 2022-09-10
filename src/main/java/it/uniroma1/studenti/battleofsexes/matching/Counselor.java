@@ -16,14 +16,12 @@ public class Counselor extends Thread {
 	private final Queue<Woman> women;
 	private final Queue<Man> men;
 	private final int groupSize;
-	private volatile boolean run;
 
 	public Counselor(Generation generation, Queue<Man> men, Queue<Woman> women) {
 		this.generation = generation;
 		this.women = Objects.requireNonNull(women);
 		this.men = Objects.requireNonNull(men);
 		groupSize = BattleOfSexesApplication.getGroupSize();
-		run = true;
 	}
 
 	@Override
@@ -33,15 +31,10 @@ public class Counselor extends Thread {
 		Set<Woman> matchWomen;
 
 		// Keep matching until there's no more women nor men
-		while(run && (matchMen = pollMan()).size() == groupSize && (matchWomen = pollWoman()).size() == groupSize)
+		while(!isInterrupted() && (matchMen = pollMan()).size() == groupSize &&
+				(matchWomen = pollWoman()).size() == groupSize)
 			match(matchMen, matchWomen);
 
-	}
-
-	@Override
-	public void interrupt() {
-		run = false;
-		super.interrupt();
 	}
 
 	private Set<Man> pollMan() {
